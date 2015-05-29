@@ -1,0 +1,7 @@
+user1,product1,10,1,10,
+user1,product2,20,2,20,0.2
+user1,product3,30,1,35,0.35
+user2,product1,100,10,,
+user2,product2,,,110,0.11
+user2,product4,100,50,200,0.2
+user2,product5,,,500,0.5

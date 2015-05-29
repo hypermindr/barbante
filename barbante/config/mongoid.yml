@@ -1,0 +1,92 @@
+###########################################################
+### TESTS
+###########################################################
+
+unit-test:
+  customer: UnitTest
+  sessions:
+    default:
+      database: unittest
+      hosts:
+        - localhost:27017
+      database_raw: unittest
+      hosts_raw:
+        - localhost:27017
+      options:
+        read: primary
+        max_retries: 1
+        retry_interval: 0
+        pool_size: 35
+  options:
+    raise_not_found_error: False
+
+# for integration tests
+test:
+  customer: Test
+  sessions:
+    default:
+      database: api_test
+      hosts:
+        - localhost:27017
+      database_raw: api_test
+      hosts_raw:
+        - localhost:27017
+      options:
+        read: primary
+        max_retries: 1
+        retry_interval: 0
+        pool_size: 35
+      cache:
+        hosts:
+          - localhost:11211
+  options:
+    raise_not_found_error: False
+
+
+###########################################################
+### PRODUCTION
+###########################################################
+
+
+foo:
+  customer: Foo
+  sessions:
+    default:
+      database: db_foo
+      hosts:
+        - host_foo.mydomain.com:27017
+      database_raw: db_foo_raw
+      hosts_raw:
+        - host_foo_raw.mydomain.com:27017
+      options:
+        read: primary
+        max_retries: 1
+        retry_interval: 0
+        pool_size: 35
+  options:
+    raise_not_found_error: False
+
+bar:
+  customer: Bar
+  sessions:
+    default:
+      database: db_bar
+      hosts:
+        - host_bar1.mydomain.com:27017
+        - host_bar2.mydomain.com:27017
+        - host_bar3.mydomain.com:27017
+      database_raw: api_peixe
+      hosts_raw:
+        - host_bar_raw1.mydomain.com:27017
+        - host_bar_raw2.mydomain.com:27017
+      options:
+        read: secondary_preferred
+        max_retries: 1
+        retry_interval: 0
+        pool_size: 100
+        replica_set: hmrapi
+      cache:
+        hosts:
+          - host_cache.mydomain.com:27017
+  options:
+    raise_not_found_error: False

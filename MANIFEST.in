@@ -1,0 +1,4 @@
+include setup.py
+recursive-include barbante *.py *.yml
+prune barbante/**/tests
+global-exclude ?itest*.py ?i*test.py

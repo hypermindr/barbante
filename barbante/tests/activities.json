@@ -1,0 +1,23 @@
+[
+{"user_id": "u_eco_1", "products": ["p_eco_2", "p_eco_3", "p_eco_4"]},
+{"user_id": "u_eco_2", "products": ["p_eco_1", "p_eco_3", "p_eco_4"]},
+{"user_id": "u_eco_3", "products": ["p_eco_1", "p_eco_2", "p_eco_4"]},
+{"user_id": "u_eco_4", "products": ["p_eco_1", "p_eco_2", "p_eco_3"]},
+{"user_id": "u_esp_1", "products": ["p_esp_2", "p_esp_3", "p_esp_4", "p_esp_5", "p_esp_6", "p_esp_7", "p_esp_8", "p_esp_9"]},
+{"user_id": "u_esp_2", "products": ["p_esp_1", "p_esp_4", "p_esp_5", "p_esp_6", "p_esp_7", "p_esp_8", "p_esp_9"]},
+{"user_id": "u_esp_3", "products": ["p_esp_1", "p_esp_2", "p_esp_5", "p_esp_6", "p_esp_7", "p_esp_8", "p_esp_9"]},
+{"user_id": "u_esp_4", "products": ["p_esp_1", "p_esp_2", "p_esp_3", "p_esp_5", "p_esp_6", "p_esp_7", "p_esp_8", "p_esp_9"]},
+{"user_id": "u_mus_1", "products": ["p_mus_2", "p_mus_3", "p_mus_4"]},
+{"user_id": "u_mus_2", "products": ["p_mus_1", "p_mus_3", "p_mus_4"]},
+{"user_id": "u_mus_3", "products": ["p_mus_1", "p_mus_2", "p_mus_3"]},
+{"user_id": "u_mus_4", "products": ["p_mus_1", "p_mus_2", "p_mus_3"]},
+{"user_id": "u_tec_1", "products": ["p_tec_2", "p_tec_3", "p_tec_4", "p_tec_5", "p_tec_7"]},
+{"user_id": "u_tec_2", "products": ["p_tec_1", "p_tec_3", "p_tec_4", "p_tec_5", "p_tec_6", "p_tec_7"]},
+{"user_id": "u_tec_3", "products": ["p_tec_1", "p_tec_2", "p_tec_4", "p_tec_5", "p_tec_7"]},
+{"user_id": "u_tec_4", "products": ["p_tec_1", "p_tec_2", "p_tec_3", "p_tec_6", "p_tec_7"]},
+{"user_id": "u_tec_5", "products": ["p_tec_1", "p_tec_2", "p_tec_4", "p_tec_6", "p_tec_7"]},
+{"user_id": "u_filter_1", "products": ["p_filter_1"]},
+{"user_id": "u_filter_2", "products": ["p_filter_1", "p_filter_2", "p_filter_3", "p_filter_4"]},
+{"user_id": "hmrtmp_AnonymousUser1", "products": ["p_mus_3", "p_mus_4"]},
+{"user_id": "u_totally_free", "products": ["p_eco_expired", "p_mus_expired"]}
+]

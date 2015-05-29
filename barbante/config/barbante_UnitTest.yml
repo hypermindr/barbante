@@ -1,0 +1,296 @@
+###########################
+# Internal settings
+###########################
+
+# latest date in the database to be used for recommendations (user templates etc.)
+# (format: yyyy-mm-dd hh:MM:ss; if None, considers the present date)
+PRESENT_DATE: 1988-11-06 10:00:00       # Emma Stone was born
+# This date can be (and have been) trusted upon to write tests in easier fashion.
+# Changing this is a sure way to break a bunch of tests. Handle with care.
+
+# indicates whether impressions (products shown to users) are kept track of
+IMPRESSIONS_ENABLED: false
+
+# indicates whether user-user strengths should be updated on both directions (user <--> template) on the fly
+BIDIRECTIONAL_UU_STRENGTH_UPDATES: true
+
+# indicates whether product-product strengths should be updated on both directions (product <--> template) on the fly
+BIDIRECTIONAL_PP_STRENGTH_UPDATES: true
+
+# indicates whether pre-renderization of user templates must take place by the end of each update of u-u strengths.
+SHOULD_CONSOLIDATE_USER_TEMPLATES_ON_THE_FLY: true
+
+# indicates whether pre-renderization of product templates must take place by the end of each update of p-p strengths.
+SHOULD_CONSOLIDATE_PRODUCT_TEMPLATES_ON_THE_FLY: true
+
+# The maximum size of the cache of context filters. If the size is reached, the cache is emptied.
+MAX_CACHE_SIZE_CONTEXT_FILTERS: 200
+
+# The maximum size of the cache of product models. If the size is reached, the cache is emptied.
+MAX_CACHE_SIZE_PRODUCT_MODELS: 5000
+
+# The number of products contributing to user-user strengths in each processing unit (page) of numerators
+PAGE_SIZE_USER_USER_NUMERATORS: 10
+
+# The number of target users of user-user pairs in each processing unit (page) of denominators
+PAGE_SIZE_USER_USER_DENOMINATORS: 2
+
+# The number of users contributing to product-product strengths in each processing unit (page) of numerators
+PAGE_SIZE_PRODUCT_PRODUCT_NUMERATORS: 10
+
+# The number of template products of product-product pairs in each processing unit (page) of denominators
+PAGE_SIZE_PRODUCT_PRODUCT_DENOMINATORS: 2
+
+# The number of products processed in each processing unit (page) during batch creation of product models
+PAGE_SIZE_BATCH_PROCESS_PRODUCTS: 5
+
+# The maximum number of parallel threads during user-user strengths generation in batch
+MAX_WORKERS_USER_USER_STRENGTHS: 3
+
+# The maximum number of parallel threads during product-product strengths generation in batch
+MAX_WORKERS_PRODUCT_PRODUCT_STRENGTHS: 3
+
+# The maximum number of parallel threads during batch creation of product models
+MAX_WORKERS_BATCH_PROCESS_PRODUCTS: 3
+
+# The maximum number of parallel threads during batch consolidation of user/product templates
+MAX_WORKERS_TEMPLATE_CONSOLIDATION: 3
+
+# the number of queued db operations which forces a flush
+FLUSH_SIZE: 8
+
+#Hard limit for product model queries. If a product model query goes beyond the limit an Exception is raised.
+MAX_RECOMMENDATIONS: 10000
+
+# The timeout in seconds a hybrid recommender will wait for a recommendation specialist to return
+# recommendations. If the specialist takes longer than the configuration timeout it is ignored in
+# the final results.
+RECOMMENDATION_TIMEOUT: 300
+
+# Defines the filter strategy to be used when filters are applied to the recommenders
+# the supported filtering strategies are: BEFORE_SCORING or AFTER_SCORING and depends on
+# the cardinality of filtered products set and the cardinality of the recommendation candidates set
+# as calculated by the various algorithms. The filter should be applied to the smallest set.
+FILTER_STRATEGY: AFTER_SCORING
+
+
+###########################
+# Recommendation settings
+###########################
+
+# Weighted activities considered for recommendations
+ACTIVITIES:
+  rate-5-star:
+    rating: 5
+    blocking: false
+    in-boost: 1
+    out-boost: 1.2
+  buy:
+    rating: 5
+    blocking: true
+    in-boost: 1
+    out-boost: 1
+  cart:
+    rating: 4
+    blocking: false
+    in-boost: 1.5
+    out-boost: 1
+  view:
+    rating: 3
+    blocking: false
+    in-boost: 1
+    out-boost: 1
+  read:
+    rating: 5
+    blocking: true
+    in-boost: 1
+    out-boost: 1
+  read-more:
+    rating: 5
+    blocking: true
+    in-boost: 1
+    out-boost: 1
+  rate-2-star:
+    rating: 2
+    blocking: false
+    in-boost: 1
+    out-boost: 1
+
+# list of all product-specific fields which are relevant for recommendation
+PRODUCT_MODEL:
+  language:
+    type: fixed
+    required: true
+    persisted: true
+    default: english
+    similarity_filter: true
+    similarity_weight: 0
+  category:
+    type: fixed
+    required: false
+    default: None
+    persisted: true
+    similarity_filter: false
+    similarity_weight: 0.1
+  source:
+    type: list
+    required: false
+    default: []
+    persisted: true
+    similarity_filter: false
+    similarity_weight: 0.1
+  resources.title:
+    type: text
+    required: true
+    persisted: true
+    similarity_filter: false
+    similarity_weight: 0.1
+  resources.short_title:
+    type: text
+    required: false
+    persisted: true
+    similarity_filter: false
+    similarity_weight: 0
+  date:
+    type: date
+    required: true
+    persisted: true
+    similarity_filter: false
+    similarity_weight: 0
+  expiration_date:
+    type: date
+    required: true
+    persisted: true
+    similarity_filter: false
+    similarity_weight: 0
+  full_content:
+    type: text
+    required: true
+    persisted: false
+    similarity_filter: false
+    similarity_weight: 0.6
+  price:
+    type: numeric
+    required: false
+    default: 100.0
+    persisted: true
+    similarity_filter: false
+    similarity_weight: 0.1
+
+# the field that is used to check for near identical recommendations
+NEAR_IDENTICAL_FILTER_FIELD: resources.title
+
+# the maximum number of common terms that is allowed between two recommendation filter fields
+NEAR_IDENTICAL_FILTER_THRESHOLD: 2
+
+# The most likely size of each recommendations page
+# (to be used to avoid near-identical recommendations in the same page)
+RECOMMENDATIONS_PAGE_SIZE: 20
+
+# The difference between two products' dates (in days) that makes their date-based similarity be 0.5.
+# Note that an inverse exponential function is used. If none is informed, than date-based similarities
+# will always be 1.
+DATE_SIMILARITY_HALFLIFE: 14
+
+# period (in days) before which all activities are disregarded for recommendation purposes
+LONG_TERM_WINDOW: 3650
+
+# recommendation time frame (only products consumed within this period can be recommended)
+SHORT_TERM_WINDOW: 3650
+
+# the number of days to limit popularity queries (usually shorter than the short_time_window)
+POPULARITY_WINDOW: 5
+
+# number of templates to be considered for each user
+COUNT_USER_TEMPLATES: 50
+
+# number of templates to be considered for each product
+COUNT_PRODUCT_TEMPLATES: 50
+
+# number of days to be considered in user-user strengths calculation
+DAYS_FOR_USER_USER_STRENGTHS: 365
+
+# number of days to be considered in product-product strengths calculation
+DAYS_FOR_PRODUCT_PRODUCT_STRENGTHS: 365
+
+# number of days to be considered in product-product strengths calculation (tfidf)
+DAYS_FOR_PRODUCT_PRODUCT_STRENGTHS_TFIDF: 365
+
+# the name of the product date field to be used in queries concerning time when no other field name is informed
+DEFAULT_PRODUCT_DATE_FIELD: date
+
+# the name of the date field that should be less or equal than the present moment for a product to be recommendable
+RECOMMENDABLE_PRODUCT_START_DATE_FIELD: None
+
+# the name of the date field that should be greater or equal than the present moment for a product to be recommendable
+RECOMMENDABLE_PRODUCT_END_DATE_FIELD: expiration_date
+
+# number of recently consumed items that will be used as base for product-similarity algorithms
+COUNT_RECENT_PRODUCTS: 5
+
+# number of relevant terms per document in text-based recommendation
+COUNT_TOP_TERMS: 200   ### we need this number to be fairly big so the unit tests run deterministically
+
+# name of the function used for decaying scores based on product age
+PRODUCT_AGE_DECAY_FUNC: exponential
+
+# half-life of the product for recommendation using exponential decay
+PRODUCT_AGE_DECAY_EXPONENTIAL_FUNCTION_HALFLIFE: 4
+
+# name of the function used for decaying scores based on recommendation history
+HISTORY_DECAY_FUNC: step
+
+# max allowed number name of recommendations in case a step function is used
+# (otherwise meaningless)
+HISTORY_DECAY_STEP_FUNCTION_TTL: 2
+
+# A factor to be applied to the score of pre-filtered products already consumed by the target user
+PREVIOUS_CONSUMPTION_FACTOR: 0
+
+# minimum number of common products before a user-to-user strength can be non-zero
+MIN_USER_USER_STRENGTH_NUMERATOR: 1
+
+# minimum number of common users before a product-to-product strength can be non-zero
+MIN_PRODUCT_PRODUCT_STRENGTH_NUMERATOR: 1
+
+# minimum rating of recommendable products in user-to-user strategies
+MIN_RATING_RECOMMENDABLE_FROM_USER: 4
+
+# minimum rating of base consumed products in item-to-item strategies
+MIN_RATING_RECOMMENDABLE_FROM_PRODUCT: 3
+
+# minimum rating in conservative strengths
+MIN_RATING_CONSERVATIVE: 3
+
+# minimum rating in aggressive strengths
+MIN_RATING_AGGRESSIVE: 5
+
+# risk factor (between 0 and 1): 0 is conservative (focus on at least 3 stars); 1 is aggressive (focus on 5 stars)
+RISK_FACTOR: 0.8
+
+# For each hybrid recommender, indicates the weight distribution of the algorithms in the form of a list of
+# [algorithm_suffix, probability, extra_comma_separated_directives] tuples}, where:
+#     *algorithm_suffix* identifies a specialist algorithm,
+#     *probability* is the importance (slice size, merge probability, vote power, etc.)
+#      assigned to an algorithm, and
+#     *extra_comma_separated_directives* are optional, hybrid-recommender-specific settings
+#      associated to an algorithm, e.g. *nobonus* indicates that the "bonus time" in HRVoting
+#      shall not apply to that specific algorithm.
+# The sum of the probabilities must be 1.
+# We use lists here because, for some hybrid recommenders, the order matters.
+ALGORITHM_WEIGHTS:
+    HRChunks:
+        - [UBCF, 0.25]
+        - [PBCF, 0.25]
+        - [CB, 0.5]
+    HRRandom:
+        - [UBCF, 0.25]
+        - [PBCF, 0.25]
+        - [CB, 0.5]
+    HRVoting:
+        - [UBCF, 0.25, nobonus]
+        - [PBCF, 0.25]
+        - [CB, 0.5, nobonus]
+
+# The algorithm used to obtain fill-in items, when no other strategy has items left to contribute.
+FILL_IN_ALGORITHM: POP
