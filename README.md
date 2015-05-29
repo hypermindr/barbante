@@ -11,7 +11,7 @@ The current implementation of Barbante uses mongodb to handle storage and access
 The customization of Barbante to meet the specific needs of a certain client is done via two configuration files:
   
   - barbante/config/mongoid.yml
-  - barbante/config/barbante_<client_name>.yml
+  - barbante/config/barbante\_&lt;client_name&gt;.yml
 
 In the barbante/config/mongoid.yml given here as an example, we have added entries for two client systems, good old "foo" and "bar". The examples in the file are quite self-explanatory, but one thing is vital: the value assigned to the "customer" attribute should be the same as &lt;client_name&gt;.
 
@@ -57,19 +57,19 @@ The list below shows the main endpoints which are currently available, and their
       - env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;
       - user_id: the unique identifier of the user;
       - product_id: the unique identifier of the product;
-      - activity_type: the type of the activity, which should be one of the types configured in barbante/config/barbante_&lt;client_name&gt;.yml file;
-      - activity_date: the date/time of the activity, in ISO format
+      - activity\_type: the type of the activity, which should be one of the types configured in barbante/config/barbante_&lt;client_name&gt;.yml file;
+      - activity\_date: the date/time of the activity, in ISO format
 
     - process_activity_slowlane
       - env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;
       - user_id: the unique identifier of the user;
       - product_id: the unique identifier of the product;
-      - activity_type: the type of the activity, which should be one of the types configured in barbante/config/barbante_&lt;client_name&gt;.yml file;
+      - activity\_type: the type of the activity, which should be one of the types configured in barbante/config/barbante_&lt;client_name&gt;.yml file;
       - activity_date: the date/time of the activity, in ISO format
       
     - process_product
       - env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;
-      - product: a JSON document with all relevant product attributes, as configured in barbante/config/barbante_&lt;client_name&gt;.yml file;
+      - product: a JSON document with all relevant product attributes, as configured in barbante/config/barbante\_&lt;client_name&gt;.yml file;
 
    - process_impression
       - env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;
@@ -82,17 +82,17 @@ The list below shows the main endpoints which are currently available, and their
       - product_id: the unique identifier of the product
 
   - GET
-    - recommend/&lt;env&gt;/&lt;user_id&gt;/&lt;count_recommendations&gt;/&lt;algorithm&gt;/&lt;context_filter&gt;
+    - recommend/&lt;env&gt;/&lt;user\_id&gt;/&lt;count\_recommendations&gt;/&lt;algorithm&gt;/&lt;context\_filter&gt;
       - env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;
       - user_id: the unique identifier of the intended target user;
       - count_recommendations: the desired number of recommendations;
       - algorithm: the identification of the algorithm (UBCF, PBCF, CB, POP, HRChunks, HRRandom, HRVoting);
-      - context_filter: an optional JSON document with product attributes to be matched (the supported product attributes are those marked "context_filter: true" in the PRODUCT_MODELS section in barbante/config/barbante_&lt;client_name&gt;.yml file)
+      - context\_filter: an optional JSON document with product attributes to be matched (the supported product attributes are those marked "context\_filter: true" in the PRODUCT\_MODELS section in barbante/config/barbante\_&lt;client_name&gt;.yml file)
 
 
 ## MongoDB
 
-Other than setting up a mongodb instance and pointing to it accordingly in barbante/config/mongodb.yml file, one should execute the Python script barbante/scripts/ensure_all_idexes.py. It will create all (initially empty) collections and indexes required by Barbante.
+Other than setting up a mongodb instance and pointing to it accordingly in barbante/config/mongodb.yml file, one should execute the Python script barbante/scripts/ensure\_all\_idexes.py. It will create all (initially empty) collections and indexes required by Barbante.
 
 
 ## Recommender algorithms
@@ -116,12 +116,12 @@ Hybrid algorithms:
 
 ### UBCF
 
-Roughly speaking, the user-based collaborative filtering ranks items based on previous activities (or "consumption patterns") of like-minded users. When recommending products for a given *target user* Alice, the UBCF specialist first gathers the *COUNT_USER_TEMPLATES* users whose recently viewed (or bought, or read, etc., according to the client settings) products maximize the likelihood of being interesting to Alice. Such like-minded users are refered to as *user templates*. The most recent 5-star-rated products of each user template are then scored according to the "degree of templateness" (or simply the *strength*) of each user template with respect to Alice. The number of user templates to be considered corresponds to an entry in barbante/config/barbante_&lt;client_name&gt;.yml file. The strength of each user *U* in the system as a user template for Alice is obtained as the probability (inferred by observing historical data of both *U* and Alice) that products rated high by *U* (and with impressions to Alice) are also rated high by Alice. 
+Roughly speaking, the user-based collaborative filtering ranks items based on previous activities (or "consumption patterns") of like-minded users. When recommending products for a given *target user* Alice, the UBCF specialist first gathers the *COUNT_USER_TEMPLATES* users whose recently viewed (or bought, or read, etc., according to the client settings) products maximize the likelihood of being interesting to Alice. Such like-minded users are refered to as *user templates*. The most recent 5-star-rated products of each user template are then scored according to the "degree of templateness" (or simply the *strength*) of each user template with respect to Alice. The number of user templates to be considered corresponds to an entry in barbante/config/barbante\_&lt;client_name&gt;.yml file. The strength of each user *U* in the system as a user template for Alice is obtained as the probability (inferred by observing historical data of both *U* and Alice) that products rated high by *U* (and with impressions to Alice) are also rated high by Alice. 
 
 
 ### PBCF
 
-The Product-Based collaborative filtering works as follows. Each of the *COUNT_RECENT_PRODUCTS* most recently consumed (implicitly rated "high enough") products of our target user Alice is regarded as a *base product*. For each base product, the algorithm gathers the *COUNT_PRODUCT_TEMPLATES* products which maximize the likelihood of being interting to other users who rated high said base product. Such probabilities are inferred based on historical data of *all* users in the client system. As expected, the number of base products and of templates of base products are configured as entries in barbante/config/barbante_&lt;client_name&gt;.yml file.
+The Product-Based collaborative filtering works as follows. Each of the *COUNT_RECENT_PRODUCTS* most recently consumed (implicitly rated "high enough") products of our target user Alice is regarded as a *base product*. For each base product, the algorithm gathers the *COUNT_PRODUCT_TEMPLATES* products which maximize the probabilities of being interesting to other users who rated high said base product. Such probabilities are inferred based on historical data of *all* users in the client system. As expected, the number of base products and of templates of base products are configured as entries in barbante/config/barbante\_&lt;client\_name&gt;.yml file.
 
 ### CB
 
@@ -135,16 +135,16 @@ The simplest specialist is the Popularity recommender, which ranks items based o
 
 ### HRChunks
 
-The first hybrid recommender merges the four specialists above in such a way that each specialist's items occupy a fixed chunk (number of slots) in the overall ranking of items. These chunks are circularly repeated until the items of all specialists have been exhausted (or the intended number of recommendations has been reached). The size of each chunk is defined according to the weights assigned to each specialist in the ALGORITHM_WEIGHTS section in barbante/config/barbante_&lt;client_name&gt;.yml file.
+The first hybrid recommender merges the four specialists above in such a way that each specialist's items occupy a fixed chunk (number of slots) in the overall ranking of items. These chunks are circularly repeated until the items of all specialists have been exhausted (or the intended number of recommendations has been reached). The size of each chunk is defined according to the weights assigned to each specialist in the ALGORITHM\_WEIGHTS section in barbante/config/barbante\_&lt;client_name&gt;.yml file.
 
 
 ### HRRandom
 
-The second hybrid recommender merges the four specialists in random fashion. For each "product slot" in the overall ranking being built, it chooses randomly the topmost item of one of the specialists, removing it from that specialist's queue. The probability to choose each of the specialists conforms to the weight assigned to it in the ALGORITHM_WEIGHTS section in barbante/config/barbante_&lt;client_name&gt;.yml file.
+The second hybrid recommender merges the four specialists in random fashion. For each "product slot" in the overall ranking being built, it chooses randomly the topmost item of one of the specialists, removing it from that specialist's queue. The probability to choose each of the specialists conforms to the weight assigned to it in the ALGORITHM_WEIGHTS section in barbante/config/barbante\_&lt;client_name&gt;.yml file.
 
 ### HRVoting
 
-The third hybrid recommender --- which seems to be the one with most interesting results --- employs a voting system to combine the rankings of all specialists. The ranking produced by each specialist is first used to assign scores for each product in a Formula 1 fashion: the first item gets a number of points, the runner-up gets less points, and so on. A negative exponential function is applied to determine the number of points each position in the ranking deserves. The points given to a same item by more than one specialist are summed up, but not until they have been multiplied by the appropriate specialist weight, as configured in the ALGORITHM_WEIGHTS section in barbante/config/barbante_&lt;client_name&gt;.yml file.
+The third hybrid recommender --- which seems to be the one with most interesting results --- employs a voting system to combine the rankings of all specialists. The ranking produced by each specialist is first used to assign scores for each product in a Formula 1 fashion: the first item gets a number of points, the runner-up gets less points, and so on. A negative exponential function is applied to determine the number of points each position in the ranking deserves. The points given to a same item by more than one specialist are summed up, but not until they have been multiplied by the appropriate specialist weight, as configured in the ALGORITHM\_WEIGHTS section in barbante/config/barbante\_&lt;client_name&gt;.yml file.
 
 
 
