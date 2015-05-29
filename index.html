@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Barbante : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Barbante</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/hypermindr/barbante">View on GitHub</a>
+
+          <h1 id="project_title">Barbante</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/hypermindr/barbante/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/hypermindr/barbante/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="barbante-recommender-engine" class="anchor" href="#barbante-recommender-engine" aria-hidden="true"><span class="octicon octicon-link"></span></a>Barbante Recommender Engine</h1>
+
+<p>Barbante is meant to be a configurable, all-purpose recomendation machine. Based on the history of activities of users and on the attributes of items (or <em>products</em>), Barbante combines some recommendation strategies and returns the top-ranked available items.</p>
+
+<p>A REST interface is provided, so the client system can trigger the tracking of its users' activities. The request for recommendations can be done via REST interface as well. A concept that is very important for the qualitiy of recommendations providade by Barbante algorithms is that of <em>impressions</em>. A product has an impression on a certain user if it has ever been shown to that user. An endpoint to keep track of impressions is also available in the REST interface.</p>
+
+<p>The current implementation of Barbante uses mongodb to handle storage and access to data. The barbante/data/MongoDBProxy.py file implements the interface in barbante/data/BaseProxy.py. Other database solutions may be used at will, provided corresponding implementations of the BaseProxy interface are created.</p>
+
+<h2>
+<a id="customization" class="anchor" href="#customization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Customization</h2>
+
+<p>The customization of Barbante to meet the specific needs of a certain client is done via two configuration files:</p>
+
+<ul>
+<li>barbante/config/mongoid.yml</li>
+<li>barbante/config/barbante_.yml</li>
+</ul>
+
+<p>In the barbante/config/mongoid.yml given here as an example, we have added entries for two client systems, good old "foo" and "bar". The examples in the file are quite self-explanatory, but one thing is vital: the value assigned to the "customer" attribute should be the same as &lt;client_name&gt;.</p>
+
+<p>For instance, in the given mongoid.yml, we have</p>
+
+<pre><code>foo:
+  customer: Foo
+  sessions:
+    default:
+      database: db_foo
+      hosts:
+        - host_foo.mydomain.com:27017
+      database_raw: db_foo_raw
+      hosts_raw:
+        - host_foo_raw.mydomain.com:27017
+      options:
+        read: primary
+        max_retries: 1
+        retry_interval: 0
+        pool_size: 35
+  options:
+    raise_not_found_error: False
+</code></pre>
+
+<p>The client system should therefore use the alias "foo" to identify itself when making REST requests, and the configuration file that will be used by Barbante to provide recommendations for that specific client will be barbante/config/barbante_Foo.yml.</p>
+
+<p>The file barbante_Foo.yml that is provided has a number of parameters that can be fine-tuned to attain better recomendations. Each one of them is very briefly explained in the file itself. The default values that are given should work out fine, anyway, for the great majority of cases.</p>
+
+<p>However, there are three sections in said file that <em>must</em> be customized: </p>
+
+<ul>
+<li>the <em>ACTIVITIES</em> section, where each user activity that gets tracked by the client is assigned a number of stars (in the usual 5-star rating system), among some other minor configurations;</li>
+<li>the <em>PRODUCT_MODEL</em> section, where each attribute of the product is classified (as text, numeric, list etc.) and assigned a weight with respect to content-based similarity; and</li>
+<li>the <em>ALGORITHM_WEIGHTS</em> section, where each recommender algorithm is assigned a weight, i.e., a measure of its importance in the overall ranking of products.</li>
+</ul>
+
+<p>It should be fairly simple to do that based on the existing examples. We remark that the 5-star rating correspondence assigned to each activity is used to obtain "implicit" user-to-product ratings in systems which do not explicitly obtain such ratings. Note that, in the case of client systems which do collect explicit ratings, such ratings can be tracked as normal activities all the same, e.g., activity "rate-5-stars" corresponding to a rating of 5, "rate-4-stars" corresponding to a rating of 4, etc.</p>
+
+<h2>
+<a id="rest-interface" class="anchor" href="#rest-interface" aria-hidden="true"><span class="octicon octicon-link"></span></a>REST interface</h2>
+
+<p>The list below shows the main endpoints which are currently available, and their GET/POST parameters: </p>
+
+<ul>
+<li>
+<p>POST</p>
+
+<ul>
+<li>
+<p>process_activity_fastlane</p>
+
+<ul>
+<li>env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;</li>
+<li>user_id: the unique identifier of the user;</li>
+<li>product_id: the unique identifier of the product;</li>
+<li>activity_type: the type of the activity, which should be one of the types configured in barbante/config/barbante_&lt;client_name&gt;.yml file;</li>
+<li>activity_date: the date/time of the activity, in ISO format</li>
+</ul>
+</li>
+<li>
+<p>process_activity_slowlane</p>
+
+<ul>
+<li>env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;</li>
+<li>user_id: the unique identifier of the user;</li>
+<li>product_id: the unique identifier of the product;</li>
+<li>activity_type: the type of the activity, which should be one of the types configured in barbante/config/barbante_&lt;client_name&gt;.yml file;</li>
+<li>activity_date: the date/time of the activity, in ISO format</li>
+</ul>
+</li>
+<li>
+<p>process_product</p>
+
+<ul>
+<li>env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;</li>
+<li>product: a JSON document with all relevant product attributes, as configured in barbante/config/barbante_&lt;client_name&gt;.yml file;</li>
+</ul>
+</li>
+<li>
+<p>process_impression</p>
+
+<ul>
+<li>env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;</li>
+<li>user_id: the unique identifier of the user;</li>
+<li>product_id: the unique identifier of the product;</li>
+<li>impression_date: the date/time of the activity, in ISO format</li>
+</ul>
+</li>
+<li>
+<p>delete_product</p>
+
+<ul>
+<li>env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;</li>
+<li>product_id: the unique identifier of the product</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>GET</p>
+
+<ul>
+<li>recommend/&lt;env&gt;/&lt;user_id&gt;/&lt;count_recommendations&gt;/&lt;algorithm&gt;/&lt;context_filter&gt;
+
+<ul>
+<li>env: the "environment", i.e., the alias for the client in barbante/config/mongodb.yml file;</li>
+<li>user_id: the unique identifier of the intended target user;</li>
+<li>count_recommendations: the desired number of recommendations;</li>
+<li>algorithm: the identification of the algorithm (UBCF, PBCF, CB, POP, HRChunks, HRRandom, HRVoting);</li>
+<li>context_filter: an optional JSON document with product attributes to be matched (the supported product attributes are those marked "context_filter: true" in the PRODUCT_MODELS section in barbante/config/barbante_&lt;client_name&gt;.yml file)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<h2>
+<a id="mongodb" class="anchor" href="#mongodb" aria-hidden="true"><span class="octicon octicon-link"></span></a>MongoDB</h2>
+
+<p>Other than setting up a mongodb instance and pointing to it accordingly in barbante/config/mongodb.yml file, one should execute the Python script barbante/scripts/ensure_all_idexes.py. It will create all (initially empty) collections and indexes required by Barbante.</p>
+
+<h2>
+<a id="recommender-algorithms" class="anchor" href="#recommender-algorithms" aria-hidden="true"><span class="octicon octicon-link"></span></a>Recommender algorithms</h2>
+
+<p>There are currently four recommender algorithms (or "specialists"), and three merge strategies (or "hybrid algorithms") available.</p>
+
+<p>Specialists:</p>
+
+<ul>
+<li>UBCF (User-Based Collaborative Filtering)</li>
+<li>PBCF (Product-Based Collaborative Filtering)</li>
+<li>CB (Content-Based)</li>
+<li>POP (Popularity)</li>
+</ul>
+
+<p>Hybrid algorithms:</p>
+
+<ul>
+<li>HRChunks</li>
+<li>HRRandom</li>
+<li>HRVoting</li>
+</ul>
+
+<h3>
+<a id="ubcf" class="anchor" href="#ubcf" aria-hidden="true"><span class="octicon octicon-link"></span></a>UBCF</h3>
+
+<p>Roughly speaking, the user-based collaborative filtering ranks items based on previous activities (or "consumption patterns") of like-minded users. When recommending products for a given <em>target user</em> Alice, the UBCF specialist first gathers the <em>COUNT_USER_TEMPLATES</em> users whose recently viewed (or bought, or read, etc., according to the client settings) products maximize the likelihood of being interesting to Alice. Such like-minded users are refered to as <em>user templates</em>. The most recent 5-star-rated products of each user template are then scored according to the "degree of templateness" (or simply the <em>strength</em>) of each user template with respect to Alice. The number of user templates to be considered corresponds to an entry in barbante/config/barbante_&lt;client_name&gt;.yml file. The strength of each user <em>U</em> in the system as a user template for Alice is obtained as the probability (inferred by observing historical data of both <em>U</em> and Alice) that products rated high by <em>U</em> (and with impressions to Alice) are also rated high by Alice. </p>
+
+<h3>
+<a id="pbcf" class="anchor" href="#pbcf" aria-hidden="true"><span class="octicon octicon-link"></span></a>PBCF</h3>
+
+<p>The Product-Based collaborative filtering works as follows. Each of the <em>COUNT_RECENT_PRODUCTS</em> most recently consumed (implicitly rated "high enough") products of our target user Alice is regarded as a <em>base product</em>. For each base product, the algorithm gathers the <em>COUNT_PRODUCT_TEMPLATES</em> products which maximize the likelihood of being interting to other users who rated high said base product. Such probabilities are inferred based on historical data of <em>all</em> users in the client system. As expected, the number of base products and of templates of base products are configured as entries in barbante/config/barbante_&lt;client_name&gt;.yml file.</p>
+
+<h3>
+<a id="cb" class="anchor" href="#cb" aria-hidden="true"><span class="octicon octicon-link"></span></a>CB</h3>
+
+<p>The Content-Based specialist works to some extent analogously to the PBCF, for it also retrieves a number of base products of the target user. Only now the template products of each base product will be those which are most intrinsically similar to the base product. The degree of similarity is obtained by the weighted comparison of each relevant attribute. Text attributes are compared using an original algorithm (based on "asymmetric debts") to be published soon.</p>
+
+<h3>
+<a id="pop" class="anchor" href="#pop" aria-hidden="true"><span class="octicon octicon-link"></span></a>POP</h3>
+
+<p>The simplest specialist is the Popularity recommender, which ranks items based on their "popularity density", that is, based on how many users have rated each item high enough divided by the time span (in days) during which the activities on that item have occurred.</p>
+
+<h3>
+<a id="hrchunks" class="anchor" href="#hrchunks" aria-hidden="true"><span class="octicon octicon-link"></span></a>HRChunks</h3>
+
+<p>The first hybrid recommender merges the four specialists above in such a way that each specialist's items occupy a fixed chunk (number of slots) in the overall ranking of items. These chunks are circularly repeated until the items of all specialists have been exhausted (or the intended number of recommendations has been reached). The size of each chunk is defined according to the weights assigned to each specialist in the ALGORITHM_WEIGHTS section in barbante/config/barbante_&lt;client_name&gt;.yml file.</p>
+
+<h3>
+<a id="hrrandom" class="anchor" href="#hrrandom" aria-hidden="true"><span class="octicon octicon-link"></span></a>HRRandom</h3>
+
+<p>The second hybrid recommender merges the four specialists in random fashion. For each "product slot" in the overall ranking being built, it chooses randomly the topmost item of one of the specialists, removing it from that specialist's queue. The probability to choose each of the specialists conforms to the weight assigned to it in the ALGORITHM_WEIGHTS section in barbante/config/barbante_&lt;client_name&gt;.yml file.</p>
+
+<h3>
+<a id="hrvoting" class="anchor" href="#hrvoting" aria-hidden="true"><span class="octicon octicon-link"></span></a>HRVoting</h3>
+
+<p>The third hybrid recommender --- which seems to be the one with most interesting results --- employs a voting system to combine the rankings of all specialists. The ranking produced by each specialist is first used to assign scores for each product in a Formula 1 fashion: the first item gets a number of points, the runner-up gets less points, and so on. A negative exponential function is applied to determine the number of points each position in the ranking deserves. The points given to a same item by more than one specialist are summed up, but not until they have been multiplied by the appropriate specialist weight, as configured in the ALGORITHM_WEIGHTS section in barbante/config/barbante_&lt;client_name&gt;.yml file.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Barbante maintained by <a href="https://github.com/hypermindr">hypermindr</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
