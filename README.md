@@ -2,7 +2,7 @@
 
 Barbante is meant to be a configurable, all-purpose recomendation machine. Based on the history of activities of users and on the attributes of items (or *products*), Barbante combines some recommendation strategies and returns the top-ranked available items.
 
-A REST interface is provided, so the client system can trigger the tracking of its users' activities. The request for recommendations can be done via REST interface as well. A concept that is very important for the qualitiy of recommendations providade by Barbante algorithms is that of *impressions*. A product has an impression on a certain user if it has ever been shown to that user. An endpoint to keep track of impressions is also available in the REST interface.
+A REST interface is provided, so the client system can trigger the tracking of its users' activities. The request for recommendations can be done via REST interface as well. A concept that is very important for the qualitiy of recommendations provided by Barbante algorithms is that of *impressions*. A product has an impression on a certain user if it has ever been shown to that user. An endpoint to keep track of impressions is also available in the REST interface.
 
 The current implementation of Barbante uses mongodb to handle storage and access to data. The barbante/data/MongoDBProxy.py file implements the interface in barbante/data/BaseProxy.py. Other database solutions may be used at will, provided corresponding implementations of the BaseProxy interface are created.
 
