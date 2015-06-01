@@ -30,15 +30,16 @@
         expected_increase minus accepted_deviation. For instance, if expected_gain is 10%, accepted_deviation is 2%,
         and min_reliability is 95%, the test will run until it figures out the minimum number of days so that
         the A/B test returns an accrued increase of at least 10% - 2% = 8% with probability at least 95%.
+        This whole thing is repeated for test group sizes (half in A, half in B) varying from 5% to 100%,
+        in 5% increments.
 
         usage:
-          ``python3 AB_relevance.py relevance <avg_daily_trials> <avg_daily_successes> <ab_size> <expected_increase>
+          ``python3 AB_relevance.py relevance <avg_daily_trials> <avg_daily_successes> <expected_increase>
                 <accepted_deviation> <min_reliability>``
 
         parameters:
           avg_daily_trials -- the average number of daily sessions (with no system changes)
           avg_daily_successes -- the average number of daily successes (buys, reads, etc.)
-          ab_size -- the percentage of users used in the tests (50% in A, 50% in B)
           expected_increase -- the believed nominal gain due to the modifications in B (i.e., recommendations)
           accepted_deviation -- defines the accepted lower bound to the accrued gain on a 'successful' A/B test
           min_reliability -- the intended minimum reliability
@@ -157,7 +158,7 @@ def get_reliability(ab_size, n_days, expected_gain, accepted_deviation):
 
 def run_relevance_tests(expected_gain, accepted_deviation, min_reliability):
 
-    for ab_size in [0.05 * i for i in range(4, 21)]:
+    for ab_size in [0.05 * i for i in range(1, 21)]:
 
         print("\nAB size = %d%%" % (100 * ab_size))
         print("expected increase = %.2f%%" % (100 * expected_gain))
